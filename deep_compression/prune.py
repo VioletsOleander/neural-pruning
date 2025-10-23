@@ -36,7 +36,7 @@ if __name__ == "__main__":
     model_save_path = prune_config["model_save_path"]
 
     # Prepare logging
-    ckpt_name = model_load_path.split("/")[-1].replace(".pt", "")
+    ckpt_name = Path(model_load_path).stem
     log_file_path = configure_logger(log_path, log_file_name=f"prune_{ckpt_name}.log")
 
     logging.info("Starting pruning with the following configurations:")
