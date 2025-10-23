@@ -1,0 +1,41 @@
+[project]
+authors = [{name = "Xinjie Chen", email = "xj-chen24@mails.tsinghua.edu.cn"}]
+name = "deep-compression"
+requires-python = ">= 3.11"
+version = "0.1.0"
+dependencies = ["huggingface-hub"]
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+deep_compression = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+
+[tool.pixi.tasks.get-dataset]
+cmd = "hf download --repo-type dataset --local-dir dataset ylecun/mnist"
+description = "Download the MNIST dataset from Hugging Face"
+outputs = [
+  "dataset/mnist/*.parquet",
+  "dataset/.gitattributes",
+  "dataset/README.md",
+]
+
+[tool.pixi.tasks.train]
+args = [{arg = "config_path", default = "configs/config.toml"}]
+cmd = "python deep_compression/train.py {{config_path}}"
+
+[tool.pixi.tasks.test]
+args = [{arg = "config_path", default = "configs/config.toml"}]
+cmd = "python deep_compression/test.py {{config_path}}"
+
+[tool.pixi.dependencies]
+datasets = ">=4.2.0,<5"
+pytorch = ">=2.8.0,<3"
+pillow = ">=11.3.0,<12"

@@ -1,0 +1,8 @@
+__pycache__/
+/dataset/
+*.pt
+*.log
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
