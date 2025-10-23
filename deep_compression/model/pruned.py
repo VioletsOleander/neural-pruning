@@ -51,7 +51,7 @@ class PrunedModel(nn.Module):
                 self.masks[param_name] = value
             else:
                 base_state_dict[key] = value
-        self.base_model.load_state_dict(base_state_dict)
+        return self.base_model.load_state_dict(base_state_dict)
 
     def get_prune_thresholds(self) -> dict[str, float]:
         """Heuristic to determine layer-wise pruning thresholds"""
@@ -77,7 +77,11 @@ class PrunedModel(nn.Module):
             else:
                 quantile = 0.4
 
-            threshold = torch.quantile(non_zero_weights, quantile)
+            threshold = (
+                torch.quantile(non_zero_weights, quantile)
+                if non_zero_weights.numel() > 0
+                else torch.tensor(0.0)
+            )
             thresholds[name] = threshold.item()
 
         return thresholds
@@ -115,18 +119,15 @@ class PrunedModel(nn.Module):
     @property
     def sparsity(self) -> float:
         """Calculate overall sparsity of the model"""
-        total_params = 0
-        pruned_params = 0
-        for name, param in self.base_model.named_parameters():
-            num_params = param.numel()
-            total_params += num_params
-            if name in self.masks:
-                pruned_params += num_params - self.masks[name].sum().item()
-        return pruned_params / total_params if total_params > 0 else 0.0
+        total_params = sum(p.numel() for p in self.base_model.parameters())
+        if total_params == 0:
+            return 0.0
+
+        effective_params = self.parameter_count()
+        return (total_params - effective_params) / total_params
 
 
 if __name__ == "__main__":
-    # Simple test
     from deep_compression.model.lenet import LeNet5
 
     base_model = LeNet5()

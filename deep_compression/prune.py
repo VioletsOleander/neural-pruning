@@ -70,7 +70,6 @@ if __name__ == "__main__":
     criterion = nn.CrossEntropyLoss()
 
     # Pruning and retraining loop
-    model.train()
     logging.info("Starting pruning and retraining process...")
     for it in range(iteration):
         logging.info(f"Pruning-Retraining Iteration {it + 1}/{iteration}")
@@ -94,6 +93,7 @@ if __name__ == "__main__":
 
         # Retrain the pruned model
         logging.info(f"Starting retraining for {num_epochs} epochs...")
+        model.train()
         for epoch in range(num_epochs):
             running_loss = 0.0
             for batch_idx, batch in enumerate(dataloader):
