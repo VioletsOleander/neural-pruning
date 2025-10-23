@@ -84,7 +84,7 @@ if __name__ == "__main__":
         # Apply pruning
         with torch.no_grad():
             for name, param in model.named_parameters():
-                if thresholds[name] > 0.0:
+                if name in thresholds and thresholds[name] > 0.0:
                     mask = param.abs() >= thresholds[name]
                     model.masks[name] = model.masks[name] & mask
             model.apply_pruning()
