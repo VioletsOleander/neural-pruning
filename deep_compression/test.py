@@ -29,7 +29,7 @@ if __name__ == "__main__":
     pruned = test_config["pruned"]
 
     # Prepare
-    ckpt_name = model_load_path.split("/")[-1].replace(".pt", "")
+    ckpt_name = Path(model_load_path).stem
     log_file_path = configure_logger(log_path, log_file_name=f"test_{ckpt_name}.log")
 
     logging.info("Starting testing with the following configurations:")
