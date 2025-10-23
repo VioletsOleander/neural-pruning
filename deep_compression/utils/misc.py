@@ -17,9 +17,10 @@ def _parse_args():
     return parser.parse_args()
 
 
-def parse_configs() -> dict:
-    args = _parse_args()
-    config_path = args.config_path
+def parse_configs(config_path: str | None = None) -> dict:
+    if config_path is None:
+        args = _parse_args()
+        config_path = args.config_path
 
     with open(config_path, "rb") as f:
         configs = tomllib.load(f)
