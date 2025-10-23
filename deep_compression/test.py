@@ -4,22 +4,14 @@ from pathlib import Path
 
 import torch
 
-from deep_compression.utils import get_dataloader, get_dataset, get_model, parse_configs
-
-
-def configure_logger(log_path: str, log_file_name: str = "test.log") -> None:
-    Path(log_path).mkdir(parents=True, exist_ok=True)
-    log_file = Path(log_path) / log_file_name
-
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler(log_file, mode="w"),
-        ],
-    )
-
+from deep_compression.utils import (
+    configure_logger,
+    get_dataloader,
+    get_dataset,
+    get_model,
+    get_pruned_model,
+    parse_configs,
+)
 
 if __name__ == "__main__":
     # Parse configurations
@@ -34,9 +26,11 @@ if __name__ == "__main__":
     batch_size = test_config["batch_size"]
     drop_last = test_config["drop_last"]
     model_load_path = test_config["model_load_path"]
+    pruned = test_config["pruned"]
 
     # Prepare
-    configure_logger(log_path)
+    ckpt_name = Path(model_load_path).stem
+    log_file_path = configure_logger(log_path, log_file_name=f"test_{ckpt_name}.log")
 
     logging.info("Starting testing with the following configurations:")
     logging.info(json.dumps(configs, indent=4))
@@ -46,19 +40,25 @@ if __name__ == "__main__":
     dataloader = get_dataloader(dataset, batch_size, drop_last)
     logging.info(f"Created DataLoader with number of batches: {len(dataloader)}.")
 
-    model = get_model(model_type)
+    logging.info(f"Loading pre-trained model from {model_load_path}")
+
+    model = get_model(model_type) if not pruned else get_pruned_model(model_type)
+    model.load_state_dict(torch.load(Path(model_load_path)))
+
     logging.info(
-        f"Initialized model: {model.__class__.__name__} with {model.parameter_count()} parameters."
+        f"Initialized model: {model.name} with {model.parameter_count()} effective parameters."
     )
+    if pruned:
+        logging.info(f"Model sparsity: {model.sparsity}")
+
     logging.info("Parameter dtypes and sizes for each layer: ")
     for name, param in model.named_parameters():
         logging.info(f"  {name}: {param.dtype}: {param.size()}")
     logging.info(
-        f"Total model size in bytes: {model.total_bytes()} bytes = {model.total_bytes() / 1024:.2f} KB."
+        f"Total effective model size in bytes: {model.total_bytes()} bytes = {model.total_bytes() / 1024:.2f} KB."
     )
 
     # Test
-    model.load_state_dict(torch.load(Path(model_load_path)))
     model.eval()
     logging.info("Starting testing...")
 
@@ -82,3 +82,4 @@ if __name__ == "__main__":
                 )
 
     logging.info(f"Final Accuracy: {accuracy:.2f}%")
+    logging.info(f"Log saved to {log_file_path}")
