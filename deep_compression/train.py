@@ -1,35 +1,17 @@
 import json
 import logging
-from pathlib import Path
 
-import torch
 from torch import nn
 from torch.optim import SGD
 
-from deep_compression.utils import get_dataloader, get_dataset, get_model, parse_configs
-
-
-def configure_logger(log_path: str, log_file_name: str = "train.log") -> None:
-    Path(log_path).mkdir(parents=True, exist_ok=True)
-    log_file = Path(log_path) / log_file_name
-
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler(log_file, mode="w"),
-        ],
-    )
-
-
-def save_checkpoint(model: nn.Module, epoch: int, checkpoint_dir: str) -> None:
-    ckpt_dir = Path(checkpoint_dir)
-    ckpt_dir.mkdir(parents=True, exist_ok=True)
-    checkpoint_path = ckpt_dir / f"{model.__class__.__name__}_epoch{epoch + 1}.pt"
-    torch.save(model.state_dict(), checkpoint_path)
-    logging.info(f"Saved model checkpoint to {checkpoint_path}.")
-
+from deep_compression.utils import (
+    configure_logger,
+    get_dataloader,
+    get_dataset,
+    get_model,
+    parse_configs,
+    save_checkpoint,
+)
 
 if __name__ == "__main__":
     # Parse configurations
@@ -49,7 +31,7 @@ if __name__ == "__main__":
     checkpoint_dir = train_config["model_save_path"]
 
     # Prepare
-    configure_logger(log_path)
+    log_file_path = configure_logger(log_path, log_file_name=f"train_{model_type}.log")
 
     logging.info("Starting training with the following configurations:")
     logging.info(json.dumps(configs, indent=4))
@@ -61,7 +43,7 @@ if __name__ == "__main__":
 
     model = get_model(model_type)
     logging.info(
-        f"Initialized model: {model.__class__.__name__} with {model.parameter_count()} parameters."
+        f"Initialized model: {model.name} with {model.parameter_count()} parameters."
     )
     logging.info("Parameter dtypes and sizes for each layer: ")
     for name, param in model.named_parameters():
@@ -90,14 +72,15 @@ if __name__ == "__main__":
             loss.backward()
             optim.step()
 
-            if (batch_idx + 1) % 10 == 0:
+            if (batch_idx + 1) % 100 == 0:
                 logging.info(
                     f"Epoch [{epoch + 1}/{num_epochs}], "
                     f"Batch [{batch_idx + 1}/{len(dataloader)}], "
                     f"Loss: {loss.item():.4f}"
                 )
 
-        save_checkpoint(model, epoch, checkpoint_dir)
+        save_checkpoint(model, f"{checkpoint_dir}/{model.name}_epoch{epoch + 1}.pt")
         logging.info(f"Epoch {epoch + 1} completed and checkpoint saved.")
 
     logging.info("Training completed.")
+    logging.info(f"Log saved to {log_file_path}")
