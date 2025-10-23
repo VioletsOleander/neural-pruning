@@ -44,6 +44,15 @@ def configure_logger(log_path: str, log_file_name: str) -> str:
 
 
 def save_checkpoint(model: nn.Module, checkpoint_path: str) -> None:
+    """
+    Saves the state dictionary of a PyTorch model to the specified checkpoint path.
+
+    Args:
+        model (nn.Module): The PyTorch model whose state will be saved.
+        checkpoint_path (str): The file path where the checkpoint will be saved.
+            Should include the filename and extension (e.g., 'model_checkpoint.pth').
+            Intermediate directories will be created if they do not exist.
+    """
     ckpt_path = Path(checkpoint_path)
     ckpt_path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), ckpt_path)
