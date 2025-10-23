@@ -89,7 +89,7 @@ if __name__ == "__main__":
                     model.masks[name] = model.masks[name] & mask
             model.apply_pruning()
             logging.info(
-                f"Applied pruning to the model, current sparsity: {model.sparsity}"
+                f"Applied pruning to the model, current sparsity: {model.sparsity:.2%}"
             )
 
         # Retrain the pruned model
