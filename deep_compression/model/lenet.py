@@ -11,6 +11,10 @@ class LeNet(nn.Module):
     def total_bytes(self) -> int:
         return sum(p.numel() * p.element_size() for p in self.parameters())
 
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__
+
 
 class LeNet5(LeNet):
     def __init__(self, num_classes=10):
