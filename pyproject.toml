@@ -28,12 +28,16 @@ outputs = [
 ]
 
 [tool.pixi.tasks.train]
-args = [{arg = "config_path", default = "configs/config.toml"}]
+args = [{arg = "config_path", default = "configs/default.toml"}]
 cmd = "python deep_compression/train.py {{config_path}}"
 
 [tool.pixi.tasks.test]
-args = [{arg = "config_path", default = "configs/config.toml"}]
+args = [{arg = "config_path", default = "configs/default.toml"}]
 cmd = "python deep_compression/test.py {{config_path}}"
+
+[tool.pixi.tasks.prune]
+args = [{arg = "config_path", default = "configs/default.toml"}]
+cmd = "python deep_compression/prune.py {{config_path}}"
 
 [tool.pixi.dependencies]
 datasets = ">=4.2.0,<5"

@@ -696,7 +696,7 @@ packages:
 - pypi: ./
   name: deep-compression
   version: 0.1.0
-  sha256: d82f87e27a87e4507948222d81289319cf405b8e0bdacd320404ccd75c0013d4
+  sha256: b63a2238b26889a113bdeaac9561a9014732d1f39c86948fc24459ddc1d88b78
   requires_dist:
   - huggingface-hub
   requires_python: '>=3.11'
