@@ -44,7 +44,7 @@ def _compute_flops(
 
     elif isinstance(module, nn.ReLU):
         # ReLU FLOPs = 1 op per element
-        flops = output.numel() * batch_size
+        flops = output.numel()
 
     elif isinstance(module, nn.AvgPool2d):
         kH, kW = (
