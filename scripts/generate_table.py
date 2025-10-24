@@ -122,7 +122,7 @@ def format_summary_table(
     return tabulate(table_data, headers, tablefmt="github", numalign="right")
 
 
-def _retrive_accuracy_from_log(log_path: Path) -> float:
+def _retreive_accuracy_from_log(log_path: Path) -> float:
     """Retrieve test accuracy from a log file."""
     with open(log_path, "r") as f:
         lines = f.readlines()
@@ -167,8 +167,8 @@ def compare_models(
     # Summary Table
     unpruned_total_params = unpruned_model.total_parameters() / 1000.0
     pruned_total_params = pruned_model.total_parameters() / 1000.0
-    unpruned_accuracy = _retrive_accuracy_from_log(unpruned_log_path)
-    pruned_accuracy = _retrive_accuracy_from_log(pruned_log_path)
+    unpruned_accuracy = _retreive_accuracy_from_log(unpruned_log_path)
+    pruned_accuracy = _retreive_accuracy_from_log(pruned_log_path)
     output += "\n\n## Summary\n\n"
     output += format_summary_table(
         unpruned_model.name,
