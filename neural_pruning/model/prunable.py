@@ -12,7 +12,6 @@ def _compute_flops(
     """Compute effective FLOPs for a module, accounting for pruning masks and batch size"""
     batch_size = output.shape[0]
 
-    # Handle convolutional layers
     if isinstance(module, nn.Conv2d):
         out_spatial_size = output.shape[2] * output.shape[3]
         out_channels = output.shape[1]
@@ -30,7 +29,6 @@ def _compute_flops(
         if module.bias is not None:
             flops += out_channels * out_spatial_size * batch_size
 
-    # Handle linear layers
     elif isinstance(module, nn.Linear):
         if mask is not None:
             total_non_pruned = torch.sum(mask).item()
@@ -44,8 +42,34 @@ def _compute_flops(
         if module.bias is not None:
             flops += module.out_features * batch_size
 
-    # Other layers are ignored for FLOPs calculation
+    elif isinstance(module, nn.ReLU):
+        # ReLU FLOPs = 1 op per element
+        flops = output.numel()
+
+    elif isinstance(module, nn.AvgPool2d):
+        kH, kW = (
+            module.kernel_size
+            if isinstance(module.kernel_size, tuple)
+            else (module.kernel_size, module.kernel_size)
+        )
+        # Number of addition operations + 1 division operation
+        flops_per_element = kH * kW - 1 + 1
+        # AvgPool FLOPs = flops per element * number of elements + 1 division per element
+        flops = flops_per_element * output.numel()
+
+    elif isinstance(module, nn.MaxPool2d):
+        kH, kW = (
+            module.kernel_size
+            if isinstance(module.kernel_size, tuple)
+            else (module.kernel_size, module.kernel_size)
+        )
+        # Number of comparison operations per output element
+        flops_per_element = kH * kW - 1
+        # MaxPool FLOPs = flops per element * number of elements
+        flops = flops_per_element * output.numel()
+
     else:
+        # Other layers are ignored for FLOPs calculation currently
         flops = 0
 
     return int(flops)
