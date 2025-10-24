@@ -33,6 +33,10 @@ class TestConfig(CommonConfig):
     model_load_path: (
         str  # Path to load pre-trained model checkpoints (full path to file)
     )
+    pruned_model_load_path: (
+        str  # Path to load pruned model checkpoints (full path to file)
+    )
+
     batch_size: int  # Batch size for training
     drop_last: bool  # Whether to drop the last incomplete batch
     pruned: bool  # Whether the model is pruned

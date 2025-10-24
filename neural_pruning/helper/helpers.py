@@ -47,6 +47,8 @@ def configuration_prepare_helper(
     if config_path is None:
         args = _parse_args()
         config_full_path = Path(args.config_path).resolve()
+    else:
+        config_full_path = Path(config_path).resolve()
 
     with config_full_path.open("rb") as f:
         configs = tomllib.load(f)
@@ -76,13 +78,14 @@ def _compose_log_file_name(configs, mode: ModeEnum) -> str:
     suffix = ".log"
 
     match mode:
-        case ModeEnum.TRAIN:
+        case ModeEnum.TRAIN | ModeEnum.PRUNE:
             return prefix + configs.model_type + suffix
         case ModeEnum.TEST:
-            stem = Path(configs.model_load_path).stem
-            return prefix + stem + suffix
-        case ModeEnum.PRUNE:
-            stem = Path(configs.pruned_model_load_path).stem
+            stem = (
+                Path(configs.model_load_path).stem
+                if configs.pruned is False
+                else Path(configs.pruned_model_load_path).stem
+            )
             return prefix + stem + suffix
 
 
@@ -164,11 +167,15 @@ def model_prepare_helper(configs, mode: ModeEnum) -> torch.nn.Module:
     logging.info(f"Initialized model: {model.name} for {mode} mode.")
 
     if mode == ModeEnum.TEST or mode == ModeEnum.PRUNE:
-        model_load_path = (
-            configs.model_load_path
-            if mode == ModeEnum.TEST
-            else configs.pruned_model_load_path
-        )
+        match mode:
+            case ModeEnum.PRUNE:
+                model_load_path = configs.model_load_path
+            case ModeEnum.TEST:
+                model_load_path = (
+                    configs.model_load_path
+                    if configs.pruned is False
+                    else configs.pruned_model_load_path
+                )
         model.load_state_dict(torch.load(Path(model_load_path)))
         logging.info(f"Loaded model weights from {model_load_path}.")
         logging.info(f"Model sparsity: {model.sparsity}")
@@ -193,7 +200,7 @@ def model_prepare_helper(configs, mode: ModeEnum) -> torch.nn.Module:
     per_layer_kilobytes = {key: value / 1024 for key, value in per_layer_bytes.items()}
     total_kilobytes = total_bytes / 1024
     logging.info(
-        f"Per layer parameter sizes (KB): {json.dumps(per_layer_kilobytes, indent=4)}   "
+        f"Per layer parameter sizes (KB): {json.dumps(per_layer_kilobytes, indent=4)}"
     )
     logging.info(f"Total model size (KB): {total_kilobytes:.2f}.")
 

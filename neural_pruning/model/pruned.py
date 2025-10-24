@@ -25,7 +25,12 @@ class PrunedModel(PrunableModel):
                 "fc3.weight": 0.1,
             }
             quantile = quantile_dict.get(name, 0.0)
-            threshold = torch.quantile(non_zero_part, quantile)
+
+            if non_zero_part.numel() == 0:
+                threshold = torch.Tensor([0.0])
+            else:
+                threshold = torch.quantile(non_zero_part, quantile)
+
             thresholds[name] = threshold.item()
 
         return thresholds
@@ -52,7 +57,7 @@ class PrunedModel(PrunableModel):
 
 
 # Redundant pruned model definitions here, but I currently think this is the best way to keep the code organized.
-# Since if I use inheritance, dimaond inheritance problem will occur.
+# Since if I use inheritance, diamond inheritance problem will occur.
 # and if I use composition, the model definition will be clumsy.
 class PrunedLeNet5(PrunedModel):
     def __init__(self, num_classes=10):

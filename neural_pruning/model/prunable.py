@@ -26,7 +26,7 @@ def _compute_flops(
         # Conv FLOPs = 2 ops per weight * spatial positions * batch size
         flops = 2 * total_non_pruned * out_spatial_size * batch_size
 
-        # Bias FLOPs = 1 ops per weight * out_channels * spatial positions * batch sizes
+        # Bias FLOPs = 1 ops per weight * out_channels * spatial positions * batch size
         if module.bias is not None:
             flops += out_channels * out_spatial_size * batch_size
 
