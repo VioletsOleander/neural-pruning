@@ -1,24 +1,11 @@
 from torch import nn
 
-
-class LeNet(nn.Module):
-    def __init__(self):
-        super(LeNet, self).__init__()
-
-    def parameter_count(self) -> int:
-        return sum(p.numel() for p in self.parameters())
-
-    def total_bytes(self) -> int:
-        return sum(p.numel() * p.element_size() for p in self.parameters())
-
-    @property
-    def name(self) -> str:
-        return self.__class__.__name__
+from .prunable import PrunableModel
 
 
-class LeNet5(LeNet):
+class LeNet5(PrunableModel):
     def __init__(self, num_classes=10):
-        super(LeNet5, self).__init__()
+        super().__init__()
         self.conv1 = nn.Conv2d(1, 6, kernel_size=5, stride=1, padding=0)
         self.pool1 = nn.AvgPool2d(kernel_size=2, stride=2)
         self.conv2 = nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0)
@@ -40,10 +27,14 @@ class LeNet5(LeNet):
         x = self.fc3(x)  # [batch_size, num_classes]
         return x
 
+    @property
+    def name(self) -> str:
+        return "LeNet5"
 
-class LeNet300100(LeNet):
+
+class LeNet300100(PrunableModel):
     def __init__(self, num_classes=10):
-        super(LeNet300100, self).__init__()
+        super().__init__()
         self.fc1 = nn.Linear(28 * 28, 300)
         self.fc2 = nn.Linear(300, 100)
         self.fc3 = nn.Linear(100, num_classes)
@@ -56,3 +47,7 @@ class LeNet300100(LeNet):
         x = self.relu(self.fc2(x))  # [batch_size, 100]
         x = self.fc3(x)  # [batch_size, num_classes]
         return x
+
+    @property
+    def name(self) -> str:
+        return "LeNet300100"

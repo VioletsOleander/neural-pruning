@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Literal, cast
 
 import torch
 from datasets import Dataset as HFDataset
@@ -40,10 +40,12 @@ def _padding_images(
 class MNISTDataset(Dataset):
     hf_dataset: HFDataset
 
-    def __init__(self, dataset_path: str, model_type: str, mode: str):
+    def __init__(
+        self, dataset_dir: str, model_type: str, split: Literal["train", "test"]
+    ):
         self.hf_dataset = cast(
             HFDataset,
-            load_dataset(dataset_path, split=mode),
+            load_dataset(dataset_dir, split=split),
         )
 
         self.hf_dataset = self.hf_dataset.with_format("torch")
@@ -51,7 +53,7 @@ class MNISTDataset(Dataset):
             _transform_dtype, batched=True, batch_size=256
         )
 
-        if mode == "train":
+        if split == "train":
             self.hf_dataset = self.hf_dataset.map(
                 _normalize_images, batched=True, batch_size=256
             )
