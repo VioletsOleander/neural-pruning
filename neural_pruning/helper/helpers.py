@@ -83,7 +83,7 @@ def _compose_log_file_name(configs, mode: ModeEnum) -> str:
         case ModeEnum.TEST:
             stem = (
                 Path(configs.model_load_path).stem
-                if configs.pruned is False
+                if not configs.pruned
                 else Path(configs.pruned_model_load_path).stem
             )
             return prefix + stem + suffix
@@ -96,7 +96,7 @@ def logger_init_helper(
     Initialize logging configuration. If log_file_name is not provided, it will be generated based on the mode and model type.
 
     Args:
-        config: Global configuration object. It is expected to have attribute: log_dir.
+        configs: Global configuration object. It is expected to have attribute: log_dir.
         mode (ModeEnum): Mode of operation.
         log_file_name (str): Name of the log file, with extension specified (e.g., .log).
 
@@ -127,7 +127,7 @@ def data_prepare_helper(configs, mode: ModeEnum) -> torch.utils.data.DataLoader:
     Prepare dataset and dataloader based on the configuration.
 
     Args:
-        config: Global configuration object. It is expected to have attributes: dataset_path, model_type, batch_size, drop_last.
+        configs: Global configuration object. It is expected to have attributes: dataset_dir, model_type, batch_size, drop_last.
         mode (ModeEnum): Mode of operation.
 
     Returns:
@@ -157,7 +157,7 @@ def model_prepare_helper(configs, mode: ModeEnum) -> torch.nn.Module:
     Initialize model based on the configuration. If mode is TEST or PRUNE, also loads pre-trained model weights. This function will also logs some useful information about the model.
 
     Args:
-        config: Global configuration object. It is expected to have attribute: model_type, model_load_path (for TEST and PRUNE mode).
+        configs: Global configuration object. It is expected to have attribute: model_type, model_load_path (for TEST and PRUNE mode).
         mode (ModeEnum): Mode of operation.
 
     Returns:
@@ -173,7 +173,7 @@ def model_prepare_helper(configs, mode: ModeEnum) -> torch.nn.Module:
             case ModeEnum.TEST:
                 model_load_path = (
                     configs.model_load_path
-                    if configs.pruned is False
+                    if not configs.pruned
                     else configs.pruned_model_load_path
                 )
         model.load_state_dict(torch.load(Path(model_load_path)))
@@ -209,7 +209,7 @@ def optim_prepare_helper(model: torch.nn.Module, configs) -> torch.optim.Optimiz
 
     Args:
         model (torch.nn.Module): The model for which the optimizer is to be created.
-        configs: Global configuration object. It is expected to have attributes: learning_rate, weight_decay
+        configs: Global configuration object. It is expected to have attributes: learning_rate, weight_decay.
 
     Returns:
         torch.optim.Optimizer: The initialized SGD optimizer.

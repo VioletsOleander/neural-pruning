@@ -27,7 +27,7 @@ class PrunedModel(PrunableModel):
             quantile = quantile_dict.get(name, 0.0)
 
             if non_zero_part.numel() == 0:
-                threshold = torch.Tensor([0.0])
+                threshold = torch.tensor(0.0)
             else:
                 threshold = torch.quantile(non_zero_part, quantile)
 
