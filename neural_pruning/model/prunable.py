@@ -55,7 +55,7 @@ def _compute_flops(
         # Number of addition operations + 1 division operation
         flops_per_element = kH * kW - 1 + 1
         # AvgPool FLOPs = flops per element * number of elements + 1 division per element
-        flops = flops_per_element * output.numel() * batch_size
+        flops = flops_per_element * output.numel()
 
     elif isinstance(module, nn.MaxPool2d):
         kH, kW = (
@@ -66,7 +66,7 @@ def _compute_flops(
         # Number of comparison operations per output element
         flops_per_element = kH * kW - 1
         # MaxPool FLOPs = flops per element * number of elements
-        flops = flops_per_element * output.numel() * batch_size
+        flops = flops_per_element * output.numel()
 
     else:
         # Other layers are ignored for FLOPs calculation currently
