@@ -29,7 +29,7 @@ class TrainConfig(CommonConfig):
 
 @dataclass
 class TestConfig(CommonConfig):
-    model_type: str  # LeNet5 or LeNet300100 or PrunedLeNet5 or PrunedLeNet300100
+    model_type: str  # LeNet5 or LeNet300100
     model_load_path: (
         str  # Path to load pre-trained model checkpoints (full path to file)
     )
@@ -37,7 +37,7 @@ class TestConfig(CommonConfig):
         str  # Path to load pruned model checkpoints (full path to file)
     )
 
-    batch_size: int  # Batch size for training
+    batch_size: int  # Batch size for testing
     drop_last: bool  # Whether to drop the last incomplete batch
     pruned: bool  # Whether the model is pruned
 

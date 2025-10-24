@@ -1,5 +1,5 @@
 """
-This script performs model pruning and retraining to an already pre-trained model, using specified configurations.
+This script performs model pruning and retraining on a pre-trained model, using specified configurations.
 Therefore, it expects to load a pre-trained model, applies pruning based on layer-wise thresholds, and retrains the pruned model.
 """
 

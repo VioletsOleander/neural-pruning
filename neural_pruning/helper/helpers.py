@@ -74,7 +74,7 @@ def configuration_prepare_helper(
 
 
 def _compose_log_file_name(configs, mode: ModeEnum) -> str:
-    prefix = mode.name.lower() + "_"
+    prefix = mode + "_"
     suffix = ".log"
 
     match mode:
@@ -182,9 +182,7 @@ def model_prepare_helper(configs, mode: ModeEnum) -> torch.nn.Module:
 
     # Report model parameter counts
     per_layer_parameters = model.per_layer_parameters()
-    total_parameters = 0
-    for value in per_layer_parameters.values():
-        total_parameters += value
+    total_parameters = sum(per_layer_parameters.values())
 
     logging.info(
         f"Per layer parameters count: {json.dumps(per_layer_parameters, indent=4)}"
@@ -192,9 +190,7 @@ def model_prepare_helper(configs, mode: ModeEnum) -> torch.nn.Module:
     logging.info(f"Total parameters count: {total_parameters}.")
 
     per_layer_bytes = model.per_layer_bytes()
-    total_bytes = 0
-    for value in per_layer_bytes.values():
-        total_bytes += value
+    total_bytes = sum(per_layer_bytes.values())
 
     # Report model size in kilobytes
     per_layer_kilobytes = {key: value / 1024 for key, value in per_layer_bytes.items()}
