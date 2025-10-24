@@ -3,10 +3,7 @@ from abc import ABC, abstractmethod
 
 def _total_number(per_layer_counter) -> int:
     """Helper function to sum values from a dictionary-producing function"""
-    total = 0
-    per_layer_number = per_layer_counter()
-    for layer_number in per_layer_number.values():
-        total += layer_number
+    total = sum(per_layer_counter().values())
     return total
 
 
