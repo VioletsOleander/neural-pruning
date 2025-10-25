@@ -74,7 +74,7 @@ Then, update the `pruned` field under `[test]` section in the example configurat
 pruned = false
 ```
 
-and evaluate the preformance of the original model:
+and evaluate the performance of the original model:
 
 ```bash
 # Test the pre-trained model 
