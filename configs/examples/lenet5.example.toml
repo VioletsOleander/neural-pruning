@@ -1,0 +1,32 @@
+# Example Configuration file
+[common]
+dataset_dir = "/home/neural-pruning/dataset" # Path to dataset directory
+log_dir = "/home/neural-pruning/logs/"       # Path to logs directory
+
+[train]
+model_type = "LeNet5"                                      # LeNet5 or LeNet300100                                            
+num_epochs = 10                                            # Number of training epochs
+batch_size = 64                                            # Batch size for training
+learning_rate = 0.01                                       # Learning rate for optimizer
+weight_decay = 5e-4                                        # Weight decay (L2 regularization) factor
+drop_last = true                                           # Whether to drop the last incomplete batch
+model_save_dir = "/home/neural-pruning/checkpoints/origin" # Path to model checkpoints directory
+
+[test]
+model_type = "LeNet5"                                                                    # LeNet5 or LeNet300100
+model_load_path = "/home/neural-pruning/checkpoints/origin/LeNet5_epoch10.pt"            # Path to load pre-trained model checkpoints (full path to file)
+pruned_model_load_path = "/home/neural-pruning/checkpoints/pruned/PrunedLeNet5_iter3.pt" # Path to load pruned model checkpoints (full path to file)
+batch_size = 64                                                                          # Batch size for training
+drop_last = false                                                                        # Whether to drop the last incomplete batch
+pruned = true                                                                            # Whether the model is pruned
+
+[prune]
+model_type = "LeNet5"                                                         # LeNet5 or LeNet300100
+model_load_path = "/home/neural-pruning/checkpoints/origin/LeNet5_epoch10.pt" # Path to load pre-trained model checkpoints (full path to file)
+num_iterations = 3                                                            # Number of pruning-retraining iterations
+num_epochs = 3                                                                # Number of retraining epochs after pruning
+batch_size = 64                                                               # Batch size for retraining
+learning_rate = 0.001                                                         # Learning rate for retraining
+weight_decay = 5e-4                                                           # Weight decay (L2 regularization) factor for retraining
+drop_last = true                                                              # Whether to drop the last incomplete batch
+model_save_dir = "/home/neural-pruning/checkpoints/pruned"                    # Path to save pruned model checkpoints directory
