@@ -31,7 +31,7 @@ This repository utilizes pixi tasks to manage workflow. The basic syntax is:
 pixi r <task-name> <task-arguments...>
 ```
 
-For `train, test, prune` tasks pre-defined in this repository all accepts only one argument, which indicates the path to the configuration file. If the path is a relative path, it is considered as relative to the project root directory.
+The `train, test, prune` tasks pre-defined in this repository all accepts only one argument, which indicates the path to the configuration file. If the path is a relative path, it is considered as relative to the project root directory.
 
 Thie repository uses TOML config files. Example configurations are in `configs/examples/`.
 
