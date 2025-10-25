@@ -4,7 +4,7 @@ dataset_dir = "/home/neural-pruning/dataset" # Path to dataset directory
 log_dir = "/home/neural-pruning/logs/"       # Path to logs directory
 
 [train]
-model_type = "LeNet5"                                      # LeNet5 or LeNet300100                                            
+model_type = "LeNet300100"                                 # LeNet5 or LeNet300100                                            
 num_epochs = 10                                            # Number of training epochs
 batch_size = 64                                            # Batch size for training
 learning_rate = 0.01                                       # Learning rate for optimizer
